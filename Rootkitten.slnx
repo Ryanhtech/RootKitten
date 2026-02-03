@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="RootkittenExecutable/RootkittenExecutable.vcxproj" Id="35ff85ef-45f9-40a3-80d1-8e63eac0dca2" />
+</Solution>
