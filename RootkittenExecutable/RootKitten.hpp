@@ -88,6 +88,12 @@ namespace RK::System
 	bool GetIsWindowsVolume(std::wstring volumeLetter, bool &isWindowsVolume);
 
 	/// <summary>
+	/// Determines whether the currently running process is elevated.
+	/// Returns false in case of error; true otherwise.
+	/// </summary>
+	bool GetIsElevated(bool &elevated);
+
+	/// <summary>
 	/// Sets the Windows privilege on the object contained in the handle.
 	/// </summary>
 	bool SetPrivilege(HANDLE handle, const wchar_t *privilegeName, bool enable);
@@ -105,6 +111,7 @@ namespace RK::System
 
 	/// <summary>
 	/// Initialises RootKitten critical components.
+	/// * Determines if RootKitten is elevated
 	/// * Grants the required privileges for RootKitten
 	/// Returns false if an error occurred, true if everything is OK.
 	/// </summary>
@@ -130,6 +137,7 @@ namespace RK::System
 
 		private:
 			HKEY hiveSubKey;
+			std::wstring hiveSubKeyName;
 		};
 
 		// Constant data

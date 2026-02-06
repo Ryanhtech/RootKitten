@@ -223,6 +223,47 @@ bool RK::System::GetIsWindowsVolume(std::wstring volumeLetter, bool &isWindowsVo
 	return true;
 }
 
+bool RK::System::GetIsElevated(bool &elevated)
+{
+	// Get a token to this process
+	HANDLE _tokHandle;
+	bool _openTokenStatus = OpenProcessToken(
+		GetCurrentProcess(),
+		TOKEN_QUERY,
+		&_tokHandle
+	);
+
+	if (!_openTokenStatus)
+	{
+		elevated = false;
+		return false;
+	}
+
+	// Retrieve the elevation information
+	TOKEN_ELEVATION _elevation;
+	unsigned long _dataLength = sizeof(TOKEN_ELEVATION);
+	bool _getInformationStatus = GetTokenInformation(
+		_tokHandle,
+		TokenElevation,
+		&_elevation,
+		sizeof(_elevation),
+		&_dataLength
+	);
+
+	if (!_getInformationStatus)
+	{
+		elevated = false;
+		return false;
+	}
+
+	// Close the token
+	CloseHandle(_tokHandle);
+
+	// Determine if the process is elevated.
+	elevated = _elevation.TokenIsElevated;
+	return true;
+}
+
 bool RK::System::SetPrivilege(HANDLE handle, const wchar_t *privilegeName, bool enable)
 {
 	TOKEN_PRIVILEGES _privileges; // Privilege info
@@ -304,6 +345,19 @@ bool RK::System::RestartWindows()
 
 bool RK::System::RootKittenInit()
 {
+	// Check if RootKitten is elevated
+	bool _isElevated = false;
+	if (!GetIsElevated(_isElevated))
+	{
+		return false;
+	}
+	if (!_isElevated)
+	{
+		RK::UI::PrintString(L"RootKitten is not elevated. Please run RootKitten as Administrator.\n");
+		SetLastError(ERROR_ACCESS_DENIED);
+		return false;
+	}
+
 	// Get handle to a token for this process
 	HANDLE _adjustPrivilegesTokenHandle;
 	bool _tokResult = GetAdjustPrivilegesProcessToken(

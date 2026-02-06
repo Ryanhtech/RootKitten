@@ -244,6 +244,23 @@ bool RK::UI::MainLoop()
 		return false;
 	}
 
+	// Load the drive's registry hive
+	RK::System::RegistryManager::RegistryHive *_hive = nullptr;
+	try
+	{
+		_hive = new RK::System::RegistryManager::RegistryHive(
+			L"SYSTEM_" + std::to_wstring(_drive->GetVolumeSerialNumber()),
+			_drive->GetVolumePath() + RK::System::RegistryManager::relativePathToSystemHiveFile
+		);
+	}
+	catch (std::runtime_error &_err)
+	{
+		// There was an error
+		std::cout << _err.what();
+		delete _drive;
+		return false;
+	}
+
 	PrintSeparator();
 
 	// Initialise the loop variables.
@@ -267,6 +284,7 @@ bool RK::UI::MainLoop()
 			// Absolutely free the memory
 			delete _mainMenuItems;
 			delete _drive;
+			delete _hive;
 
 			// Say good-bye !
 			PrintString(L"Goodbye!\n");
@@ -277,6 +295,7 @@ bool RK::UI::MainLoop()
 			{
 				delete _mainMenuItems;
 				delete _drive;
+				delete _hive;
 				return false;
 			}
 			break;
@@ -286,6 +305,7 @@ bool RK::UI::MainLoop()
 			{
 				delete _mainMenuItems;
 				delete _drive;
+				delete _hive;
 				return false;
 			}
 			break;
@@ -324,6 +344,7 @@ int main(int argc, char *argv[])
 	if (!_status)
 	{
 		RK::UI::PrintString(L"An error occurred. Win32 error code: " + std::to_wstring(GetLastError()) + L"\n");
+		RK::UI::PromptStr(L"fuezezf");
 		return GetLastError();
 	}
 

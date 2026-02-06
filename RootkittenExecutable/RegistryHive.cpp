@@ -7,7 +7,7 @@ RK::System::RegistryManager::RegistryHive::RegistryHive(std::wstring subKeyName,
 	bool _exists;
 	bool _existsStatus = RK::System::GetFileExists(hivePath, _exists);
 
-	if (!_exists || _existsStatus)
+	if (!_exists || !_existsStatus)
 	{
 		// An error occurred, or the file doesn't esist.
 		throw std::runtime_error("The hive file doesn't exist or it cannot be accessed.");
@@ -39,17 +39,29 @@ RK::System::RegistryManager::RegistryHive::RegistryHive(std::wstring subKeyName,
 	}
 
 	this->hiveSubKey = _key;
+	this->hiveSubKeyName = subKeyName;
 }
 
 RK::System::RegistryManager::RegistryHive::~RegistryHive()
 {
-	// Unload the key
-	long _unloadKeyStatus = RegCloseKey(
+	// Close the key
+	long _closeKeyStatus = RegCloseKey(
 		this->hiveSubKey
+	);
+
+	if (_closeKeyStatus != ERROR_SUCCESS)
+	{
+		// Well... sorry, memory leaks.
+	}
+
+	// Unload the key
+	long _unloadKeyStatus = RegUnLoadKeyW(
+		HKEY_USERS,
+		this->hiveSubKeyName.c_str()
 	);
 
 	if (_unloadKeyStatus != ERROR_SUCCESS)
 	{
-		// Well... sorry, memory leaks.
+		// Hmm.
 	}
 }
