@@ -229,6 +229,12 @@ namespace RK::UI
 	bool PromptForConsent(std::wstring message);
 
 	/// <summary>
+	/// This function displays the disclaimer. If the user consents, returns true. Else,
+	/// returns false.
+	/// </summary>
+	bool PromptForDisclaimer();
+
+	/// <summary>
 	/// Initialises the list of main menu items and returns a pointer to it.
 	/// WARNING! If you modify the main menu items, please also check in the MainLoop
 	/// function if the indexes still match.

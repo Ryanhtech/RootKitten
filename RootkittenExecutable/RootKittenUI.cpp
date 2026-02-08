@@ -167,13 +167,25 @@ bool RK::UI::PromptForConsent(std::wstring message)
 	}
 }
 
+bool RK::UI::PromptForDisclaimer()
+{
+	// Print the disclaimer
+	PrintString(L"* WARNING!\nIf you use this software, you agree that wrong use of this software\n"
+							L"may break stuff on this computer. Never use this program without the\n"
+							L"consent of this computer's owner. Do not try to get access to data that\n"
+							L"doesn't belong to you. The author(s) of this software cannot be held\n"
+							L"accountable for any damage made using this software.\n");
+
+	return PromptForConsent(L"Do you agree?");
+}
+
 std::vector<std::wstring> *RK::UI::GetMainMenuItems()
 {
 	std::vector<std::wstring> _list =
 	{
 		L"Exit RootKitten",
-		L"Restart the system",
-		L"Power off the system",
+		L"Restart this system",
+		L"Power off this system",
 		L"Install/Uninstall Utilman exploit",
 		L"Mount system Registry hive and open in Regedit",
 		L"Mount user Registry hive and open in Regedit",
@@ -255,10 +267,9 @@ bool RK::UI::MainLoop()
 	}
 	catch (std::runtime_error &_err)
 	{
-		// There was an error
-		std::cout << _err.what();
-		delete _drive;
-		return false;
+		// There was an error. Tell the user about this
+		PrintString(L"There was an error loading the system registry hives for drive " + _drive->GetVolumePath() + L".\n"
+						+ L"Some features of RootKitten that require system registry hives to be loaded are disabled.\n");
 	}
 
 	PrintSeparator();
@@ -316,7 +327,7 @@ bool RK::UI::MainLoop()
 
 		default:
 			// The feature wasn't found.
-			PrintString(L"We couldn't find a feature corresponding to your request - Try again.\n");
+			PrintString(L"We couldn't find a feature matching your request - Try again.\n");
 			break;
 		}
 
@@ -329,6 +340,13 @@ bool RK::UI::MainLoop()
 int main(int argc, char *argv[])
 {
 	RK::UI::PrintCopyright();
+
+	if (!RK::UI::PromptForDisclaimer())
+	{
+		return 0;
+	}
+
+	RK::UI::PrintSeparator();
 
 	// Initialise the system
 	bool _initResult = RK::System::RootKittenInit();
