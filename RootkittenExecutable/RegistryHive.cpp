@@ -65,3 +65,28 @@ RK::System::RegistryManager::RegistryHive::~RegistryHive()
 		// Hmm.
 	}
 }
+
+bool RK::System::RegistryManager::RegistryHive::GetSubKeyPointer(std::wstring pathToSubKey, HKEY &subKey)
+{
+	// Initialise the variables, and call the corresponding Windows API.
+	HKEY _subKey;
+
+	unsigned long _status = RegOpenKeyExW(
+		this->hiveSubKey,
+		pathToSubKey.c_str(),
+		0,
+		KEY_READ,
+		&_subKey
+	);
+
+	// Check for errors
+	if (_status != ERROR_SUCCESS)
+	{
+		// An error occurred.
+		return false;
+	}
+
+	// No error occurred.
+	subKey = _subKey;
+	return true;
+}

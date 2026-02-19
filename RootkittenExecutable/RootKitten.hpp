@@ -9,6 +9,47 @@
 
 namespace RK::System
 {
+	class Volume
+	{
+	public:
+		/// <summary>
+		/// Represents a Windows volume.
+		/// </summary>
+		Volume(std::wstring volumePath);
+		~Volume();
+
+		/// <summary>
+		/// Returns a wstring containing the volume name.
+		/// </summary>
+		std::wstring GetVolumeName();
+
+		/// <summary>
+		/// Returns the volume FS.
+		/// </summary>
+		std::wstring GetVolumeFileSystem();
+
+		/// <summary>
+		/// Returns the volume path (letter).
+		/// </summary>
+		std::wstring GetVolumePath();
+
+		/// <summary>
+		/// Returns the volume's serial number.
+		/// </summary>
+		unsigned long GetVolumeSerialNumber();
+
+		/// <summary>
+		/// Gets all the volumes in the system.
+		/// </summary>
+		static bool GetAllVolumes(std::vector<RK::System::Volume>& volumes);
+
+	private:
+		std::wstring _volumePath;
+		std::wstring _volumeFileSystem;
+		std::wstring _volumeName;
+		unsigned long _volumeSerialNumber = 0;
+	};
+
 	namespace RegistryManager
 	{
 		class RegistryHive
@@ -26,6 +67,13 @@ namespace RK::System
 			/// </param>
 			RegistryHive(std::wstring subKeyName, std::wstring hivePath);
 			~RegistryHive();
+
+			/// <summary>
+			/// Retrieves a pointer to the subkey matching the specified path.
+			/// This path must be relative to the root of the hive.
+			/// Returns false if an error occurred, true otherwise.
+			/// </summary>
+			bool GetSubKeyPointer(std::wstring pathToSubKey, HKEY &subKey);
 
 		private:
 			HKEY hiveSubKey;
@@ -73,7 +121,7 @@ namespace RK::System
 		bool DisableUtilmanExploit(std::wstring drivePath);
 	}
 
-	namespace UserManagement
+	namespace UserManager
 	{
 		class UserProfile
 		{
@@ -119,48 +167,14 @@ namespace RK::System
 			std::wstring _profilePath;
 			std::wstring _userHivePath;
 		};
+
+		/// <summary>
+		/// Retrieves the user profiles for the specified volume, using the provided
+		/// SYSTEM hive.
+		/// Returns true if no error occurred, false otherwise.
+		/// </summary>
+		bool GetUserProfiles(RK::System::RegistryManager::RegistryHive systemHive, RK::System::Volume systemVolume, std::vector<RK::System::UserManager::UserProfile> &profiles);
 	}
-
-	class Volume
-	{
-	public:
-		/// <summary>
-		/// Represents a Windows volume.
-		/// </summary>
-		Volume(std::wstring volumePath);
-		~Volume();
-
-		/// <summary>
-		/// Returns a wstring containing the volume name.
-		/// </summary>
-		std::wstring GetVolumeName();
-
-		/// <summary>
-		/// Returns the volume FS.
-		/// </summary>
-		std::wstring GetVolumeFileSystem();
-
-		/// <summary>
-		/// Returns the volume path (letter).
-		/// </summary>
-		std::wstring GetVolumePath();
-
-		/// <summary>
-		/// Returns the volume's serial number.
-		/// </summary>
-		unsigned long GetVolumeSerialNumber();
-
-		/// <summary>
-		/// Gets all the volumes in the system.
-		/// </summary>
-		static bool GetAllVolumes(std::vector<RK::System::Volume>& volumes);
-
-	private:
-		std::wstring _volumePath;
-		std::wstring _volumeFileSystem;
-		std::wstring _volumeName;
-		unsigned long _volumeSerialNumber = 0;
-	};
 
 	/// <summary>
 	/// Gets the hard drive letters that are currently connected to the system.
