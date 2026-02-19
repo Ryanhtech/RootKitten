@@ -325,6 +325,10 @@ bool RK::UI::MainLoop()
 			RK::UI::UtilmanLoop(_drive->GetVolumePath());
 			break;
 
+		case 5:
+			// TODO user registry hives
+			break;
+
 		default:
 			// The feature wasn't found.
 			PrintString(L"We couldn't find a feature matching your request - Try again.\n");

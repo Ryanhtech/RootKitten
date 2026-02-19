@@ -38,6 +38,9 @@
     <ClCompile Include="RegistryHive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UserProfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">

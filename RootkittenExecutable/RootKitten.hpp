@@ -9,114 +9,6 @@
 
 namespace RK::System
 {
-	class Volume
-	{
-	public:
-		/// <summary>
-		/// Represents a Windows volume.
-		/// </summary>
-		Volume(std::wstring volumePath);
-		~Volume();
-
-		/// <summary>
-		/// Returns a wstring containing the volume name.
-		/// </summary>
-		std::wstring GetVolumeName();
-
-		/// <summary>
-		/// Returns the volume FS.
-		/// </summary>
-		std::wstring GetVolumeFileSystem();
-
-		/// <summary>
-		/// Returns the volume path (letter).
-		/// </summary>
-		std::wstring GetVolumePath();
-
-		/// <summary>
-		/// Returns the volume's serial number.
-		/// </summary>
-		unsigned long GetVolumeSerialNumber();
-
-		/// <summary>
-		/// Gets all the volumes in the system.
-		/// </summary>
-		static bool GetAllVolumes(std::vector<RK::System::Volume>& volumes);
-
-	private:
-		std::wstring _volumePath;
-		std::wstring _volumeFileSystem;
-		std::wstring _volumeName;
-		unsigned long _volumeSerialNumber = 0;
-	};
-
-	/// <summary>
-	/// Gets the hard drive letters that are currently connected to the system.
-	/// Returns true when the operation completes successfully, false otherwise.
-	/// </summary>
-	bool GetHardDriveLetters(std::vector<std::wstring>& driveLetters);
-
-	/// <summary>
-	/// Returns info about the volume specified in argument "volumeLetter".
-	/// </summary>
-	/// <returns>
-	/// true if the operation performed successfully, false otherwise. If false is
-	/// returned, no data is modified in the arguments.
-	/// </returns>
-	bool GetVolumeInfo(std::wstring volumeLetter, std::wstring &volumeName, unsigned long &volumeSerialNumber, std::wstring &volumeFileSystem);
-
-	/// <summary>
-	/// Gets an AdjustPrivileges token for this process.
-	/// </summary>
-	bool GetAdjustPrivilegesProcessToken(HANDLE &tokenHandle);
-
-	/// <summary>
-	/// Checks whether a spacified directory exists. Returns false if an error
-	/// occurred.
-	/// </summary>
-	bool GetDirectoryExists(std::wstring checkPath, bool &directoryExists);
-
-	/// <summary>
-	/// Determines whether a file (or directory...) exists or not. Returns false if an error occurred.
-	/// </summary>
-	bool GetFileExists(std::wstring filePath, bool &fileExists);
-
-	/// <summary>
-	/// Checks if a specified volume is a Windows volume, by considering multiple
-	/// clues. Returns false in case of error.
-	/// </summary>
-	bool GetIsWindowsVolume(std::wstring volumeLetter, bool &isWindowsVolume);
-
-	/// <summary>
-	/// Determines whether the currently running process is elevated.
-	/// Returns false in case of error; true otherwise.
-	/// </summary>
-	bool GetIsElevated(bool &elevated);
-
-	/// <summary>
-	/// Sets the Windows privilege on the object contained in the handle.
-	/// </summary>
-	bool SetPrivilege(HANDLE handle, const wchar_t *privilegeName, bool enable);
-
-	/// <summary>
-	/// Immediatly shuts down the system.
-	/// </summary>
-	bool ShutDownWindows(bool restart);
-	bool ShutDownWindows();
-
-	/// <summary>
-	/// Immediately restarts the system.
-	/// </summary>
-	bool RestartWindows();
-
-	/// <summary>
-	/// Initialises RootKitten critical components.
-	/// * Determines if RootKitten is elevated
-	/// * Grants the required privileges for RootKitten
-	/// Returns false if an error occurred, true if everything is OK.
-	/// </summary>
-	bool RootKittenInit();
-
 	namespace RegistryManager
 	{
 		class RegistryHive
@@ -180,6 +72,159 @@ namespace RK::System
 		/// </summary>
 		bool DisableUtilmanExploit(std::wstring drivePath);
 	}
+
+	class Volume
+	{
+	public:
+		/// <summary>
+		/// Represents a Windows volume.
+		/// </summary>
+		Volume(std::wstring volumePath);
+		~Volume();
+
+		/// <summary>
+		/// Returns a wstring containing the volume name.
+		/// </summary>
+		std::wstring GetVolumeName();
+
+		/// <summary>
+		/// Returns the volume FS.
+		/// </summary>
+		std::wstring GetVolumeFileSystem();
+
+		/// <summary>
+		/// Returns the volume path (letter).
+		/// </summary>
+		std::wstring GetVolumePath();
+
+		/// <summary>
+		/// Returns the volume's serial number.
+		/// </summary>
+		unsigned long GetVolumeSerialNumber();
+
+		/// <summary>
+		/// Gets all the volumes in the system.
+		/// </summary>
+		static bool GetAllVolumes(std::vector<RK::System::Volume>& volumes);
+
+	private:
+		std::wstring _volumePath;
+		std::wstring _volumeFileSystem;
+		std::wstring _volumeName;
+		unsigned long _volumeSerialNumber = 0;
+	};
+
+	class UserProfile
+	{
+	public:
+		/// <summary>
+		/// Initialises a new Windows user profile using the provided path from the
+		/// root of a Windows drive, the provided user SID and the absolute path to
+		/// the user's registry hive file.
+		/// Throws std::runtime_error when an error occurs.
+		/// </summary>
+		UserProfile(std::wstring profilePath, unsigned int profileSid);
+		UserProfile(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath);
+		~UserProfile();
+
+		/// <summary>
+		/// Attempts to load the registry hive associated with this profile. Returns
+		/// false if an error occurred, true otherwise.
+		/// </summary>
+		bool LoadUserHive();
+
+		/// <summary>
+		/// Closes the registry key and unload the hive associated with this profile.
+		/// WARNING! Please DITCH all the pointers you previously used to access this
+		/// user's registry after calling this method!!
+		/// </summary>
+		void UnloadUserHive();
+
+		/// <summary>
+		/// Attempts to retrieve the registry key associated with this profile.
+		/// Returns false if an error occurs, true otherwise.
+		/// This method must be called AFTER successfully calling LoadUserHive().
+		/// </summary>
+		bool GetUserHive(RK::System::RegistryManager::RegistryHive& key);
+
+	private:
+		/// <summary>
+		/// Initialisation method
+		/// </summary>
+		void Initialise(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath);
+
+		RK::System::RegistryManager::RegistryHive* _userHive;
+		unsigned int _sid;
+		std::wstring _profilePath;
+		std::wstring _userHivePath;
+	};
+
+	/// <summary>
+	/// Gets the hard drive letters that are currently connected to the system.
+	/// Returns true when the operation completes successfully, false otherwise.
+	/// </summary>
+	bool GetHardDriveLetters(std::vector<std::wstring>& driveLetters);
+
+	/// <summary>
+	/// Returns info about the volume specified in argument "volumeLetter".
+	/// </summary>
+	/// <returns>
+	/// true if the operation performed successfully, false otherwise. If false is
+	/// returned, no data is modified in the arguments.
+	/// </returns>
+	bool GetVolumeInfo(std::wstring volumeLetter, std::wstring& volumeName, unsigned long& volumeSerialNumber, std::wstring& volumeFileSystem);
+
+	/// <summary>
+	/// Gets an AdjustPrivileges token for this process.
+	/// </summary>
+	bool GetAdjustPrivilegesProcessToken(HANDLE& tokenHandle);
+
+	/// <summary>
+	/// Checks whether a spacified directory exists. Returns false if an error
+	/// occurred.
+	/// </summary>
+	bool GetDirectoryExists(std::wstring checkPath, bool& directoryExists);
+
+	/// <summary>
+	/// Determines whether a file (or directory...) exists or not. Returns false if an error occurred.
+	/// </summary>
+	bool GetFileExists(std::wstring filePath, bool& fileExists);
+
+	/// <summary>
+	/// Checks if a specified volume is a Windows volume, by considering multiple
+	/// clues. Returns false in case of error.
+	/// </summary>
+	bool GetIsWindowsVolume(std::wstring volumeLetter, bool& isWindowsVolume);
+
+	/// <summary>
+	/// Determines whether the currently running process is elevated.
+	/// Returns false in case of error; true otherwise.
+	/// </summary>
+	bool GetIsElevated(bool& elevated);
+
+	/// <summary>
+	/// Sets the Windows privilege on the object contained in the handle.
+	/// </summary>
+	bool SetPrivilege(HANDLE handle, const wchar_t* privilegeName, bool enable);
+
+	/// <summary>
+	/// Immediatly shuts down the system.
+	/// </summary>
+	bool ShutDownWindows(bool restart);
+	bool ShutDownWindows();
+
+	/// <summary>
+	/// Immediately restarts the system.
+	/// </summary>
+	bool RestartWindows();
+
+	/// <summary>
+	/// Initialises RootKitten critical components.
+	/// * Determines if RootKitten is elevated
+	/// * Grants the required privileges for RootKitten
+	/// Returns false if an error occurred, true if everything is OK.
+	/// </summary>
+	bool RootKittenInit();
 }
 
 namespace RK::UI

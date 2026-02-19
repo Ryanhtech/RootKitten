@@ -139,6 +139,7 @@
     <ClCompile Include="RegistryManager.cpp" />
     <ClCompile Include="RootKittenSystem.cpp" />
     <ClCompile Include="RootKittenUI.cpp" />
+    <ClCompile Include="UserProfile.cpp" />
     <ClCompile Include="UtilmanExploit.cpp" />
     <ClCompile Include="Volume.cpp" />
   </ItemGroup>
