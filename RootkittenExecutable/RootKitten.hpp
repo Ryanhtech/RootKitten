@@ -73,6 +73,54 @@ namespace RK::System
 		bool DisableUtilmanExploit(std::wstring drivePath);
 	}
 
+	namespace UserManagement
+	{
+		class UserProfile
+		{
+		public:
+			/// <summary>
+			/// Initialises a new Windows user profile using the provided path from the
+			/// root of a Windows drive, the provided user SID and the absolute path to
+			/// the user's registry hive file.
+			/// Throws std::runtime_error when an error occurs.
+			/// </summary>
+			UserProfile(std::wstring profilePath, unsigned int profileSid);
+			UserProfile(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath);
+			~UserProfile();
+
+			/// <summary>
+			/// Attempts to load the registry hive associated with this profile. Returns
+			/// false if an error occurred, true otherwise.
+			/// </summary>
+			bool LoadUserHive();
+
+			/// <summary>
+			/// Closes the registry key and unload the hive associated with this profile.
+			/// WARNING! Please DITCH all the pointers you previously used to access this
+			/// user's registry after calling this method!!
+			/// </summary>
+			void UnloadUserHive();
+
+			/// <summary>
+			/// Attempts to retrieve the registry key associated with this profile.
+			/// Returns false if an error occurs, true otherwise.
+			/// This method must be called AFTER successfully calling LoadUserHive().
+			/// </summary>
+			bool GetUserHive(RK::System::RegistryManager::RegistryHive& key);
+
+		private:
+			/// <summary>
+			/// Initialisation method
+			/// </summary>
+			void Initialise(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath);
+
+			RK::System::RegistryManager::RegistryHive* _userHive;
+			unsigned int _sid;
+			std::wstring _profilePath;
+			std::wstring _userHivePath;
+		};
+	}
+
 	class Volume
 	{
 	public:
@@ -112,51 +160,6 @@ namespace RK::System
 		std::wstring _volumeFileSystem;
 		std::wstring _volumeName;
 		unsigned long _volumeSerialNumber = 0;
-	};
-
-	class UserProfile
-	{
-	public:
-		/// <summary>
-		/// Initialises a new Windows user profile using the provided path from the
-		/// root of a Windows drive, the provided user SID and the absolute path to
-		/// the user's registry hive file.
-		/// Throws std::runtime_error when an error occurs.
-		/// </summary>
-		UserProfile(std::wstring profilePath, unsigned int profileSid);
-		UserProfile(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath);
-		~UserProfile();
-
-		/// <summary>
-		/// Attempts to load the registry hive associated with this profile. Returns
-		/// false if an error occurred, true otherwise.
-		/// </summary>
-		bool LoadUserHive();
-
-		/// <summary>
-		/// Closes the registry key and unload the hive associated with this profile.
-		/// WARNING! Please DITCH all the pointers you previously used to access this
-		/// user's registry after calling this method!!
-		/// </summary>
-		void UnloadUserHive();
-
-		/// <summary>
-		/// Attempts to retrieve the registry key associated with this profile.
-		/// Returns false if an error occurs, true otherwise.
-		/// This method must be called AFTER successfully calling LoadUserHive().
-		/// </summary>
-		bool GetUserHive(RK::System::RegistryManager::RegistryHive& key);
-
-	private:
-		/// <summary>
-		/// Initialisation method
-		/// </summary>
-		void Initialise(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath);
-
-		RK::System::RegistryManager::RegistryHive* _userHive;
-		unsigned int _sid;
-		std::wstring _profilePath;
-		std::wstring _userHivePath;
 	};
 
 	/// <summary>

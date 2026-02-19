@@ -1,18 +1,18 @@
 #include "RootKitten.hpp"
 #include <stdexcept>
 
-RK::System::UserProfile::UserProfile(std::wstring profilePath, unsigned int profileSid)
+RK::System::UserManagement::UserProfile::UserProfile(std::wstring profilePath, unsigned int profileSid)
 {
 	// Call the initialisation method with the default path to the user registry hive file
 	this->Initialise(profilePath, profileSid, profilePath + L"NTUSER.DAT");
 }
 
-RK::System::UserProfile::UserProfile(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath)
+RK::System::UserManagement::UserProfile::UserProfile(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath)
 {
 	this->Initialise(profilePath, profileSid, userHivePath);
 }
 
-void RK::System::UserProfile::Initialise(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath)
+void RK::System::UserManagement::UserProfile::Initialise(std::wstring profilePath, unsigned int profileSid, std::wstring userHivePath)
 {
 	// Copy the parameters to local attributes
 	this->_profilePath = profilePath;
@@ -20,13 +20,13 @@ void RK::System::UserProfile::Initialise(std::wstring profilePath, unsigned int 
 	this->_userHivePath = userHivePath;
 }
 
-RK::System::UserProfile::~UserProfile()
+RK::System::UserManagement::UserProfile::~UserProfile()
 {
 	// Destroy pointers
 	this->UnloadUserHive();
 }
 
-bool RK::System::UserProfile::LoadUserHive()
+bool RK::System::UserManagement::UserProfile::LoadUserHive()
 {
 	// Attempt to initialise a registry hive from the provided hive file. This will throw a runtime_error
 	// if it fails for some reason.
@@ -43,7 +43,7 @@ bool RK::System::UserProfile::LoadUserHive()
 	return true;
 }
 
-void RK::System::UserProfile::UnloadUserHive()
+void RK::System::UserManagement::UserProfile::UnloadUserHive()
 {
 	// Delete the class.. Goodbye!
 	if (this->_userHive != nullptr)
@@ -52,7 +52,7 @@ void RK::System::UserProfile::UnloadUserHive()
 	}
 }
 
-bool RK::System::UserProfile::GetUserHive(RK::System::RegistryManager::RegistryHive &key)
+bool RK::System::UserManagement::UserProfile::GetUserHive(RK::System::RegistryManager::RegistryHive &key)
 {
 	// Attempt to get the user's hive instance.
 	// If this instance is null, report an error.

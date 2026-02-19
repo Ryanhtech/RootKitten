@@ -272,6 +272,13 @@ bool RK::UI::MainLoop()
 						+ L"Some features of RootKitten that require system registry hives to be loaded are disabled.\n");
 	}
 
+	// Load the local user profiles.
+	// If the SYSTEM registry hive is null, then we can't do this.
+	if (_hive != nullptr)
+	{
+
+	}
+
 	PrintSeparator();
 
 	// Initialise the loop variables.
