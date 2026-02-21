@@ -89,6 +89,13 @@ namespace RK::System
 		/// Returns false if an error occurred, true otherwise.
 		/// </summary>
 		bool GetDoesSystemHiveExist(std::wstring drivePath, bool &exists);
+
+		/// <summary>
+		/// Gets the names of the subkeys of the specified key.
+		/// The names are returned as-is, with no prefix.
+		/// If an error occurs, this function returns false, true otherwise.
+		/// </summary>
+		bool GetSubKeys(HKEY key, std::vector<std::wstring> &subKeyNames);
 	}
 
 	namespace UtilmanExploit

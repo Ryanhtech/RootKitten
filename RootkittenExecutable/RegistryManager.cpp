@@ -18,3 +18,8 @@ bool RK::System::RegistryManager::GetDoesSystemHiveExist(std::wstring drivePath,
 	exists = _fileExists;
 	return true;
 }
+
+bool RK::System::RegistryManager::GetSubKeys(HKEY key, std::vector<std::wstring> &subKeyNames)
+{
+	return true;
+}
